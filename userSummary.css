@@ -1,0 +1,64 @@
+.sectionHeader{
+    margin-top: 5%;
+    margin-left: 5%;
+}
+
+input{
+    display: inline-block;
+    margin-left: 5%;
+    margin-top: 5%;
+    color: black
+}
+
+button{
+    display: inline-block;
+    background-color: #403831;
+    width: 150px;
+    color: #ffffff;
+    text-align: center;
+    font-size: 30px;
+    transition: background-color 0.5s;
+}
+
+button:hover{
+    background-color: #57514b;
+}
+
+button:active{
+    background-color: #403831;
+}
+
+.loader{
+    display: inline-block;
+    margin: -5px 5px;
+    border: 5px solid #EAF0F6;
+    border-radius: 50%;
+    border-top: 5px solid #5f5755;
+    width: 40px;
+    height: 40px;
+    animation: spinner 1s linear infinite;
+}
+
+@keyframes spinner{
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.userSummary{
+    margin-top: 1%;
+    margin-left: 5%;
+    margin-bottom: 5%;
+    height: 500px;
+    width: 800px;
+    background-color: white;
+    color: black;
+}
+
+iframe{
+    margin: 0.5%;
+}
+
+p{
+    white-space: normal;
+    word-break: break-all;
+}
