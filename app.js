@@ -7,9 +7,7 @@ searchButton.addEventListener("click", fetchSummary);
 
 async function getRepos(){
     const url = "https://api.github.com/search/repositories?q=user:" + document.getElementById("queryUsername").value;
-    const response = await fetch(url, {
-        headers: { authorization: "token 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" }
-      });
+    const response = await fetch(url);
     const result = await response.json();
 
     if (!response.ok){
