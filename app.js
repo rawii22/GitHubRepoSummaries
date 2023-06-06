@@ -27,14 +27,7 @@ queryUsername.addEventListener("keyup", function(event) {
     }
 });
 printAsJSONButton.addEventListener("change", function(e) {
-    if (this.checked) {
-        userSummary.textContent = summaryJSON;
-        userSummary.style["whiteSpace"] = "pre-line";
-    }
-    else{
-        userSummary.textContent = summaryPretty;
-        userSummary.style["whiteSpace"] = "pre";
-    }
+    updateSummaryView();
 })
 
 //API Functions
@@ -167,8 +160,18 @@ async function createSummary(){
     }
     summaryPretty += languageList;
 
-    userSummary.textContent = summaryPretty;
-    userSummary.style["whiteSpace"] = "pre";
+    updateSummaryView();
 
     return summary;
+}
+
+function updateSummaryView(){
+    if (printAsJSONButton.checked) {
+        userSummary.textContent = summaryJSON;
+        userSummary.style["whiteSpace"] = "pre-line";
+    }
+    else{
+        userSummary.textContent = summaryPretty;
+        userSummary.style["whiteSpace"] = "pre";
+    }
 }
