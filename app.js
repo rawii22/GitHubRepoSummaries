@@ -1,9 +1,22 @@
 const searchButton = document.getElementById("searchButton");
 const queryUsername = document.getElementById("queryUsername");
+const includeForksButton = document.getElementById("includeForksButton");
+const printAsJSONButton = document.getElementById("printAsJSONButton");
 const userSummary = document.getElementById("userSummary");
 const body = document.getElementById("body");
+
 var loader = null;
 var token = 'TOKEN_HERE';
+var headers = {
+    method: 'GET',
+    headers:
+    {
+        'Authorization': 'token ' + token
+    },
+}
+//Lazy load the printed results to avoid calling the API more times than necessary
+var summaryJSON = "";
+var summaryPretty = "";
 
 //Event handlers
 
@@ -13,20 +26,28 @@ queryUsername.addEventListener("keyup", function(event) {
         createSummary();
     }
 });
+printAsJSONButton.addEventListener("change", function(e) {
+    if (this.checked) {
+        userSummary.textContent = summaryJSON;
+        userSummary.style["whiteSpace"] = "pre-line";
+    }
+    else{
+        userSummary.textContent = summaryPretty;
+        userSummary.style["whiteSpace"] = "pre";
+    }
+})
 
 //API Functions
 
 async function getReposByPage(username, pageNum = 1){
     const url = "https://api.github.com/users/" + username + "/repos?q=user:" + username + "&per_page=100&page=" + pageNum;
-    const response = await fetch(url, {
-        method: 'GET',
-        headers:
-        {
-            'Authorization': 'token ' + token
-        },
-    });
+    const response = await fetch(url, headers);
 
-    if (!response.ok){
+    if (response.status == 404){
+        userSummary.textContent = "User not found";
+        return null
+    }
+    else if (!response.ok){
         console.log("Error fetching repos");
         return null;
     }
@@ -35,7 +56,7 @@ async function getReposByPage(username, pageNum = 1){
 
 //Will return the languages used by a single repository given a single URL to that repo's language list.
 async function getLanguagesByRepo(repoLanguagesURL){
-    var response = await fetch(repoLanguagesURL);
+    var response = await fetch(repoLanguagesURL, headers);
     return await response.json();
 }
 
@@ -52,10 +73,10 @@ async function getAllRepos(username){
 }
 
 //Given a list of URLs that point the languages of repositories, this function will return an ordered list of all languages along with their respective number of occurances.
-async function getLanguages(languageURLs){
+async function getLanguages(repoLanguageURLs){
     var languages = [];
     var promises = [];
-    languageURLs.forEach(link => {
+    repoLanguageURLs.forEach(link => {
         promises.push(getLanguagesByRepo(link));
     });
     var results = await Promise.all(promises);
@@ -100,10 +121,11 @@ async function createSummary(){
         averageSize: 0,
         languages: []
     }
-    var repoLanguages = [];
+    summaryJSON = "";
+    summaryPretty = "";
+    var repoLanguageURLs = [];
 
-    //TODO: GET THIS FROM THE SCREEN VIA CHECK BOX
-    var includeForks = false;
+    var includeForks = includeForksButton.checked;
 
     //fill out the summary object
     summary.username = queryUsername.value;
@@ -116,14 +138,30 @@ async function createSummary(){
         summary.totalStargazers += element.stargazers_count;
         summary.totalForks += element.forks_count;
         summary.totalSizes += element.size;
-        repoLanguages.push(element.languages_url);
+        repoLanguageURLs.push(element.languages_url);
     });
     summary.averageSize = (summary.totalSizes/summary.totalRepos) + "KB";
     summary.totalSizes += "KB";
-    summary.languages = await getLanguages(repoLanguages);
+    summary.languages = await getLanguages(repoLanguageURLs);
 
-    //TODO: Only print json if the user chooses to do so. Otherwise, print beautifully.
-    userSummary.textContent = JSON.stringify(summary);
+    summaryJSON = JSON.stringify(summary);
+
+    summaryPretty = 
+    "Username: " + summary.username + "\r\n" +
+    "Total Repositories: " + summary.totalRepos + "\r\n" +
+    "Total Stargazers: " + summary.totalStargazers + "\r\n" +
+    "Total Forks: " + summary.totalForks + "\r\n" +
+    "Size of all repos: " + summary.totalSizes + "\r\n" +
+    "Average repo size: " + summary.averageSize + "\r\n" +
+    "Languages:"  + "\r\n";
+    var languageList = "";
+    for (let [key, value] of Object.entries(summary.languages)){
+        languageList += "\t" + value[0] + ": " + value[1] + "\r\n";
+    }
+    summaryPretty += languageList;
+
+    userSummary.textContent = summaryPretty;
+    userSummary.style["whiteSpace"] = "pre";
 
     return summary;
 }

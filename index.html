@@ -16,8 +16,14 @@
         </a>
     </nav>
     <hr>
-    <input id="queryUsername" type="text" placeholder="Search username" maxlength="100">
+    <input type="text" id="queryUsername" placeholder="Search username" maxlength="100">
     <button id="searchButton">Search</button>
+    <div class="options">
+        <input type="checkbox" id="includeForksButton" name="includeForksButton">
+        <label for="includeForksButton">Include Forks</label>
+        <input type="checkbox" id="printAsJSONButton" name="printAsJSONButton">
+        <label for="printAsJSONButton">View as JSON</label>
+    </div>
     <p id="userSummary" class="userSummary">
     </p>
     <script src="app.js"></script>

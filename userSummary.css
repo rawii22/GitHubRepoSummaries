@@ -10,6 +10,14 @@ input{
     color: black
 }
 
+label{
+    font-size: 20px;
+}
+
+input[type=checkbox]{
+    margin: 0;
+}
+
 button{
     display: inline-block;
     background-color: #403831;
@@ -44,6 +52,10 @@ button:active{
     100% { transform: rotate(360deg); }
 }
 
+.options{
+    margin-left: 5%;
+}
+
 .userSummary{
     margin-top: 1%;
     margin-left: 5%;
@@ -52,6 +64,7 @@ button:active{
     width: 800px;
     background-color: white;
     color: black;
+    overflow: auto;
 }
 
 iframe{
