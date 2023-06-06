@@ -59,19 +59,21 @@ button:active{
 .userSummary{
     margin-top: 1%;
     margin-left: 5%;
-    margin-bottom: 5%;
+    margin-bottom: 1%;
     height: 500px;
     width: 800px;
     background-color: white;
     color: black;
     overflow: auto;
-}
-
-iframe{
-    margin: 0.5%;
+    float: left;
 }
 
 p{
     white-space: pre-line;
     word-break: break-all;
+}
+
+#userImage{
+    margin-top: 1%;
+    margin-left: 1%;
 }

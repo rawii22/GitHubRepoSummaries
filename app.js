@@ -3,8 +3,10 @@ const queryUsername = document.getElementById("queryUsername");
 const includeForksButton = document.getElementById("includeForksButton");
 const printAsJSONButton = document.getElementById("printAsJSONButton");
 const userSummary = document.getElementById("userSummary");
+const userLink = document.getElementById("userLink");
 const body = document.getElementById("body");
 
+var userImage = null;
 var loader = null;
 var token = 'TOKEN_HERE';
 var headers = {
@@ -32,13 +34,14 @@ printAsJSONButton.addEventListener("change", function(e) {
 
 //API Functions
 
+//This will return all the repositories for a user on a specified page (1 by default). It will return at most 100 results.
 async function getReposByPage(username, pageNum = 1){
     const url = "https://api.github.com/users/" + username + "/repos?q=user:" + username + "&per_page=100&page=" + pageNum;
     const response = await fetch(url, headers);
 
     if (response.status == 404){
         userSummary.textContent = "User not found";
-        return null
+        return null;
     }
     else if (!response.ok){
         console.log("Error fetching repos");
@@ -53,6 +56,18 @@ async function getLanguagesByRepo(repoLanguagesURL){
     return await response.json();
 }
 
+//This will return the data belonging to a specified username.
+async function getUser(username){
+    const url = "https://api.github.com/users/" + username;
+    const response = await fetch(url, headers);
+
+    if (!response.ok){
+        console.log("Error fetching user");
+        return "";
+    }
+    return await response.json();
+}
+
 
 //Helpers
 
@@ -61,6 +76,9 @@ async function getAllRepos(username){
     var allRepos = [];
     var pageNum = 1;
     var page = await getReposByPage(username, pageNum);
+    if (!page){
+        return null;
+    }
     allRepos = page;
 
     while (page.length != 0){
@@ -103,6 +121,9 @@ async function createSummary(){
     if (loader){
         loader.remove();
     }
+    if (userImage){
+        userImage.remove();
+    }
     loader = document.createElement("div");
     loader.classList.add("loader");
     searchButton.after(loader);
@@ -126,6 +147,14 @@ async function createSummary(){
     var repoLanguageURLs = [];
 
     var includeForks = includeForksButton.checked;
+    var user = await getUser(queryUsername.value);
+    userImage = document.createElement("img");
+    userImage.id = "userImage";
+    userImage.width = 250;
+    userImage.height = 250;
+    userImage.src = user.avatar_url;
+    userLink.href = user.html_url;
+    userLink.appendChild(userImage);
 
     //fill out the summary object
     summary.username = queryUsername.value;
