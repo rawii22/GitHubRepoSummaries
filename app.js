@@ -65,11 +65,18 @@ async function getLanguagesByRepo(repoLanguagesURL){
 
 //Given a username, this will return all repositories belonging to a specified user
 async function getAllRepos(username){
-    var firstPage = await getReposByPage(username);
+    var allRepos = [];
+    var pageNum = 1;
+    var page = await getReposByPage(username, pageNum);
+    allRepos = page;
 
-    //TODO: Include all pages for users with over 100 repos
+    while (page.length != 0){
+        pageNum += 1;
+        page = await getReposByPage(username, pageNum);
+        allRepos = [...allRepos, ...page];
+    }
     
-    return firstPage
+    return allRepos;
 }
 
 //Given a list of URLs that point the languages of repositories, this function will return an ordered list of all languages along with their respective number of occurances.
@@ -140,7 +147,7 @@ async function createSummary(){
         summary.totalSizes += element.size;
         repoLanguageURLs.push(element.languages_url);
     });
-    summary.averageSize = (summary.totalSizes/summary.totalRepos) + "KB";
+    summary.averageSize = (summary.totalRepos > 0 ? (summary.totalSizes/summary.totalRepos) : 0) + "KB";
     summary.totalSizes += "KB";
     summary.languages = await getLanguages(repoLanguageURLs);
 
