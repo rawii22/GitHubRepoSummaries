@@ -59,6 +59,6 @@ iframe{
 }
 
 p{
-    white-space: normal;
+    white-space: pre-line;
     word-break: break-all;
 }
